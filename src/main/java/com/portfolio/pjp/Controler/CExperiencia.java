@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("explab")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/explab")
+@CrossOrigin(origins = "https://frontendargppjp.web.app/#/")
 public class CExperiencia {
     @Autowired
     SExperiencia sExperiencia;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://frontendargppjp.web.app/#/")
 public class PersonaControler {
     @Autowired IPersonaService ipersonaservice;
     
@@ -34,7 +34,7 @@ public class PersonaControler {
     ipersonaservice.deletePersona(id);
     return "La persona fue eliminada correctamente";}
     
-    @PutMapping("personas/editar/{id}")
+    @PutMapping("/personas/editar/{id}")
     public Persona editPersona(@PathVariable Long id,
             @RequestParam("nombre") String nuevoNombre,
             @RequestParam("apellido") String nuevoApellido,
