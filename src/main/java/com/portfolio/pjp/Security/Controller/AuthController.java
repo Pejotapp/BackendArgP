@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = {"https://frontendargppjp.web.app/#","http://localhost:4200"})
+@CrossOrigin(origins = {"https://frontendargppjp.web.app/#"})
 public class AuthController {
     
     @Autowired
@@ -68,6 +68,7 @@ public class AuthController {
     
     if(nuevoUsuario.getRoles().contains("admin"))
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+    
     usuario.setRoles(roles);
     usuarioService.save(usuario);
     
