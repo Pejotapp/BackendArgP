@@ -32,13 +32,13 @@ public class PersonaControler {
     return new ResponseEntity(list, HttpStatus.OK);
     }
     
-    @GetMapping("/detail/{id}")
+    /*@GetMapping("/detail/{id}")
     public ResponseEntity<Persona> getById(@PathVariable("id")int id){
     if(!personaService.existsById(id)){
     return new ResponseEntity(new Mensaje("No existe el ID"), HttpStatus.BAD_REQUEST);}
     
     Persona persona = personaService.getOne(id).get();
-    return new ResponseEntity(persona, HttpStatus.OK);}
+    return new ResponseEntity(persona, HttpStatus.OK);}*/
     
     /*@DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id")int id){
