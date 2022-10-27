@@ -14,6 +14,10 @@ public class UsuarioPrincipal implements UserDetails {
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
+    
+    
+public UsuarioPrincipal(){}
+
 
     public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
@@ -23,6 +27,8 @@ public class UsuarioPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
+    
+    
     public static UsuarioPrincipal build(Usuario usuario) {
         List<GrantedAuthority> authorities = usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol.getRolNombre().name())).collect(Collectors.toList());
         return new UsuarioPrincipal(usuario.getNombre(), usuario.getNombreUsuario(), usuario.getPassword(), usuario.getEmail(), authorities);
