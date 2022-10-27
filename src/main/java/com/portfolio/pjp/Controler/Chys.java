@@ -1,9 +1,7 @@
 package com.portfolio.pjp.Controler;
 
-import com.portfolio.pjp.Dto.Dtohys;
 import com.portfolio.pjp.Entity.hys;
-import com.portfolio.pjp.Security.Controller.Mensaje;
-import com.portfolio.pjp.Service.Shys;
+import com.portfolio.pjp.Service.IhysS;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,66 +23,66 @@ import org.springframework.web.bind.annotation.RestController;
 public class Chys {
 
     @Autowired
-    Shys shys;
+    IhysS ihysS;
 
-    @GetMapping("/lista")
-    public ResponseEntity<List<hys>> list() {
-        List<hys> list = shys.list();
-        return new ResponseEntity(list, HttpStatus.OK);
+     @GetMapping("/lista")
+    public ResponseEntity<List<hys>> mostrarSkills() {
+        List<hys> listaSkills = ihysS.traerSkills();
+        return new ResponseEntity<>(listaSkills, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<hys> getById(@PathVariable("id") int id) {
-        if (!shys.existsById(id)) {
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+    @GetMapping("/traer/{id}")
+    public ResponseEntity<?> mostrarSkillporId(@PathVariable int id) {
+
+        hys skill = ihysS.traerSkillsPorId(id);
+        if (skill == null) {
+            return new ResponseEntity<>("Skill no encontrada", HttpStatus.BAD_REQUEST);
         }
-        hys hYs = shys.getOne(id).get();
-        return new ResponseEntity(hYs, HttpStatus.OK);
+        return new ResponseEntity<>(skill, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        if (!shys.existsById(id)) {
-            return new ResponseEntity(new Mensaje("El Id no existe"), HttpStatus.NOT_FOUND);
+    @PostMapping("/crear")
+    public ResponseEntity<?> agregarSkilll(@RequestBody hys skill) {
+        if (StringUtils.isBlank(skill.getNombreSkill())
+               
+                && skill.getPorcentaje() <= 0) {
+            return new ResponseEntity<>("Campos obligatorios vacios o incorrectos.", HttpStatus.BAD_REQUEST);
+
         }
-        shys.delete(id);
-        return new ResponseEntity(new Mensaje("Eliminada"), HttpStatus.OK);
+        ihysS.saveSkills(skill);
+        return new ResponseEntity<>(skill, HttpStatus.OK);
     }
 
-    @PutMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Dtohys dtohys) {
-        if (StringUtils.isBlank(dtohys.getNombre())) {
-            return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<?> editarSkills(@PathVariable int id, @RequestBody hys skill) {
+        if (ihysS.traerSkillsPorId(id) == null) {
+            return new ResponseEntity<>("Skills no encontrada", HttpStatus.BAD_REQUEST);
         }
-        if (shys.existsByNombre(dtohys.getNombre())) {
-            return new ResponseEntity(new Mensaje("Esa skill ya existe"), HttpStatus.BAD_REQUEST);
+        if (StringUtils.isBlank(skill.getNombreSkill())
+    
+                && skill.getPorcentaje() <= 0) {
+
+            return new ResponseEntity<>("Campos obligatorios vacios o incorrectos.", HttpStatus.BAD_REQUEST);
         }
 
-        hys hYs = new hys(dtohys.getNombre(), dtohys.getPorcentaje());
-        shys.save(hYs);
-        return new ResponseEntity(new Mensaje("Skill agregada"), HttpStatus.OK);
+        hys nuevaSkill = ihysS.traerSkillsPorId(id);
+
+        nuevaSkill.setNombreSkill(skill.getNombreSkill());
+        nuevaSkill.setPorcentaje(skill.getPorcentaje());
+    
+
+        ihysS.saveSkills(nuevaSkill);
+
+        return new ResponseEntity<>(nuevaSkill, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody Dtohys dtohys) {
-        if (!shys.existsById(id)) {
-            return new ResponseEntity(new Mensaje("El Id no existe"), HttpStatus.BAD_REQUEST);
+    @DeleteMapping("/borrar/{id}")
+    public ResponseEntity<?> borrarSkills(@PathVariable int id) {
+
+        if (ihysS.traerSkillsPorId(id) == null) {
+            return new ResponseEntity<>("Skill no encontrada", HttpStatus.NOT_FOUND);
         }
-
-        if (shys.existsByNombre(dtohys.getNombre()) && shys.getByNombre(dtohys.getNombre()).get()
-                .getId() != id) {
-            return new ResponseEntity(new Mensaje("Esa Skill ya existe"), HttpStatus.BAD_REQUEST);
-        }
-
-        if (StringUtils.isBlank(dtohys.getNombre())) {
-            return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-
-        hys hYs = shys.getOne(id).get();
-        hYs.setNombre(dtohys.getNombre());
-        hYs.setPorcentaje((dtohys.getPorcentaje()));
-
-        shys.save(hYs);
-        return new ResponseEntity(new Mensaje("Skill actualizada"), HttpStatus.OK);
+        ihysS.deleteSkills(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

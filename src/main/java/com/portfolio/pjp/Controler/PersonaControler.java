@@ -60,8 +60,8 @@ public class PersonaControler {
         return persona;
     }
     
-    @GetMapping("/personas/traer/perfil")
+    /*@GetMapping("/personas/traer/perfil")
     public Persona findPersona(){
         return ipersonaService.traerPersona((int)1);
-    }
+    }*/
 }

@@ -4,7 +4,6 @@ package com.portfolio.pjp.Service;
 import com.portfolio.pjp.Entity.hys;
 import com.portfolio.pjp.Repository.Rhys;
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,35 +11,30 @@ import org.springframework.stereotype.Service;
 
 @Transactional
 @Service
-public class Shys {
+public class Shys implements IhysS{
     @Autowired
     Rhys rhys;
     
-    public List<hys> list(){
-    return rhys.findAll();
+@Override
+    public void deleteSkills(int id) {
+        rhys.deleteById(id);
     }
-    
-    public Optional<hys> getOne(int id){
-    return rhys.findById(id);
-    }
-    
-    public Optional<hys> getByNombre(String nombre){
-    return rhys.findByNombre(nombre);}
-    
-    public void save(hys skill){
-    rhys.save(skill);}
-    
-    public void delete(int id){
-    rhys.deleteById(id);}
-    
-    public boolean existsById(int id){
-    return rhys.existsById(id);}
-    
-    public boolean existsByNombre(String nombre){
-    return rhys.existsByNombre(nombre);}
 
-    public Object getByNombreE(String nombre) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+    public void saveSkills(hys skill) {
+        rhys.save(skill);   
+    }
+
+    @Override
+    public List<hys> traerSkills() {
+        List<hys> skills = rhys.findAll();
+        return skills;
+    }
+
+    @Override
+    public hys traerSkillsPorId(int id) {
+        hys skill = rhys.findById(id).orElse(null);
+        return skill;
     }
     
 }

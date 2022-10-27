@@ -1,10 +1,8 @@
 
 package com.portfolio.pjp.Controler;
 
-import com.portfolio.pjp.Dto.dtoEducacion;
 import com.portfolio.pjp.Entity.Educacion;
-import com.portfolio.pjp.Security.Controller.Mensaje;
-import com.portfolio.pjp.Service.SEducacion;
+import com.portfolio.pjp.Service.IEduS;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,57 +24,68 @@ import org.springframework.web.bind.annotation.RestController;
 public class CEducacion {
     
     @Autowired
-    SEducacion sEducacion;
+    IEduS iEduS;
     
     @GetMapping("/lista")
-    public ResponseEntity<List<Educacion>> list(){List<Educacion> list = sEducacion.list();
-    return new ResponseEntity(list, HttpStatus.OK);
+    public ResponseEntity<List<Educacion>> lista() {
+        List<Educacion> listaEducacion = iEduS.getEducacion();
+        return new ResponseEntity<>(listaEducacion, HttpStatus.OK);
     }
-    
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<Educacion> getById(@PathVariable("id")int id){
-    if(!sEducacion.existById(id)){
-    return new ResponseEntity(new Mensaje("No existe el ID"), HttpStatus.BAD_REQUEST);}
-    
-    Educacion educacion = sEducacion.getOne(id).get();
-    return new ResponseEntity(educacion, HttpStatus.OK);}
-    
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id")int id){
-    if(sEducacion.existsById(id)){
-    return new ResponseEntity(new Mensaje("No existe el Id"), HttpStatus.NOT_FOUND);}
-       sEducacion.delete(id);
-    return new ResponseEntity(new Mensaje("Educacion eliminada"), HttpStatus.OK);
-    }
-    
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody dtoEducacion dtoeducacion){
-    if(StringUtils.isBlank(dtoeducacion.getNombreE())){
-    return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);}
-    if(sEducacion.existsByNombreE(dtoeducacion.getNombreE())){
-    return new ResponseEntity(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);}
-    Educacion educacion = new Educacion(
-    dtoeducacion.getNombreE(), dtoeducacion.getDescripcionE());
-        sEducacion.save(educacion);
-        return new ResponseEntity(new Mensaje("Educacion creada"), HttpStatus.OK);
+
+    @GetMapping("/traer/{id}")
+    public ResponseEntity<?> getById(@PathVariable int id) {
+        Educacion educacion = iEduS.findEducacion(id);
+        if (educacion == null) {
+            return new ResponseEntity<>("Educacion no encontrada", HttpStatus.BAD_REQUEST);
         }
-    
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody dtoEducacion dtoeducacion){
-    if(!sEducacion.existsById(id)){return new ResponseEntity(new Mensaje("No existe el ID"), HttpStatus.NOT_FOUND);}
-    if(sEducacion.existsByNombreE(dtoeducacion.getNombreE()) && sEducacion.getByNombreE(dtoeducacion.getNombreE()).get().getId() != id){
-    return new ResponseEntity(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);}
-     if(StringUtils.isBlank(dtoeducacion.getNombreE())){
-     return new ResponseEntity(new Mensaje("El campo no puede estar vacio"), HttpStatus.BAD_REQUEST);}
- 
-    Educacion educacion = sEducacion.getOne(id).get();
-    
-    educacion.setNombreE(dtoeducacion.getNombreE());
-    educacion.setDescripcionE(dtoeducacion.getDescripcionE());
-    
-    sEducacion.save(educacion);
-    
-    return new ResponseEntity(new Mensaje("Educacion actualizada"), HttpStatus.OK);
+        return new ResponseEntity<>(educacion, HttpStatus.OK);
+    }
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> addEducacion(@RequestBody Educacion educacion) {
+        if (StringUtils.isBlank(educacion.getNombreEdu())
+                && StringUtils.isBlank(educacion.getDescripcionEdu())
+          ) {
+            return new ResponseEntity<>("Hay campos obligatorios sin completar.", HttpStatus.BAD_REQUEST);
+
+        }
+        
+        iEduS.saveEducacion(educacion);
+        return new ResponseEntity<>(educacion, HttpStatus.OK);
+    }
+
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<?> editarEducacion(@PathVariable int id, @RequestBody Educacion educacion) {
+
+        Educacion educacionEditada = iEduS.findEducacion(id);
+
+        if (educacionEditada == null) {
+            return new ResponseEntity<>("Educación no encontrada.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (StringUtils.isBlank(educacion.getNombreEdu())
+                && StringUtils.isBlank(educacion.getDescripcionEdu())
+             ) {
+            return new ResponseEntity<>("Hay campos obligatorios sin completar.", HttpStatus.BAD_REQUEST);
+        }
+
+        educacionEditada.setNombreEdu(educacion.getNombreEdu());
+        educacionEditada.setDescripcionEdu(educacion.getDescripcionEdu());
+        
+
+        iEduS.saveEducacion(educacionEditada);
+        return new ResponseEntity<>(educacionEditada, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/borrar/{id}")
+    public ResponseEntity<?> delete(@PathVariable int id) {
+
+        if (iEduS.findEducacion(id) == null) {
+            return new ResponseEntity<>("Educacion no encontrada", HttpStatus.BAD_REQUEST);
+        }
+        iEduS.deleteEducacion(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     }
     
-}
+

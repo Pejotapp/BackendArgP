@@ -1,10 +1,8 @@
 
 package com.portfolio.pjp.Controler;
 
-import com.portfolio.pjp.Dto.dtoExperiencia;
 import com.portfolio.pjp.Entity.Experiencia;
-import com.portfolio.pjp.Security.Controller.Mensaje;
-import com.portfolio.pjp.Service.SExperiencia;
+import com.portfolio.pjp.Service.IExperienciaService;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,63 +23,67 @@ import org.springframework.web.bind.annotation.PutMapping;
 @CrossOrigin(origins = {"https://frontendargppjp.web.app/#","http://localhost:4200"})
 public class CExperiencia {
     @Autowired
-    SExperiencia sExperiencia;
+    IExperienciaService iexperienciaService;
     
     
    @GetMapping("/lista")
-   public ResponseEntity<List<Experiencia>> list(){
-   List<Experiencia> list = sExperiencia.list();
-   return new ResponseEntity(list, HttpStatus.OK);}
-   
-   
-   @GetMapping("/detail/{id}")
-   public ResponseEntity<Experiencia> getById(@PathVariable("id") int id){
-        if(!sExperiencia.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Experiencia experiencia = sExperiencia.getOne(id).get();
-        return new ResponseEntity(experiencia, HttpStatus.OK);
+    public ResponseEntity<List<Experiencia>> list() {
+        List<Experiencia> listaExpe = iexperienciaService.getExperiencia();
+        return new ResponseEntity<>(listaExpe, HttpStatus.OK);
     }
-   
-     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        if (!sExperiencia.existsById(id)) {
-            return new ResponseEntity(new Mensaje("El Id no existe"), HttpStatus.NOT_FOUND);
+
+    @GetMapping("/traer/{id}")
+    public ResponseEntity<?> mostrarExperiencia(@PathVariable int id) {
+
+        Experiencia expe = iexperienciaService.findExperiencia(id);
+        if (expe == null) {
+            return new ResponseEntity<>("Experiencia no encontrada", HttpStatus.BAD_REQUEST);
         }
-        sExperiencia.delete(id);
-        return new ResponseEntity(new Mensaje("Eliminado"), HttpStatus.OK);
+        return new ResponseEntity<>(expe, HttpStatus.OK);
     }
-   
-    
-   @PostMapping("/create")
-   public ResponseEntity<?> create(@RequestBody dtoExperiencia dtoexp){
-   if(StringUtils.isBlank(dtoexp.getNombreE()))
-       return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-   if(sExperiencia.existsByNombreE(dtoexp.getNombreE()))
-       return new ResponseEntity(new Mensaje("Esa experiencia existe"), HttpStatus.BAD_REQUEST);
-   
-   Experiencia experiencia = new Experiencia(dtoexp.getNombreE(), dtoexp.getDescripcionE());
-   sExperiencia.save(experiencia);
-   return new ResponseEntity(new Mensaje("Experiencia agregada"), HttpStatus.OK);
-   }
-   
-   @PutMapping("/update/{id}")
-   public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody dtoExperiencia dtoexp){
-   if(!sExperiencia.existsById(id))
-       return new ResponseEntity(new Mensaje("El Id no existe"), HttpStatus.BAD_REQUEST);
-   
-   if(sExperiencia.existsByNombreE(dtoexp.getNombreE()) && sExperiencia.getByNombreE(dtoexp.getNombreE()).get().getId() != id)
-       return new ResponseEntity(new Mensaje("Esa experiencia ya existe"), HttpStatus.BAD_REQUEST);
-   
-   if(StringUtils.isBlank(dtoexp.getNombreE()))
-       return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-   
-   Experiencia experiencia = sExperiencia.getOne(id).get();
-   experiencia.setNombreE(dtoexp.getNombreE());
-   experiencia.setDescripcionE((dtoexp.getDescripcionE()));
-   
-   sExperiencia.save(experiencia);
-   return new ResponseEntity(new Mensaje("Experiencia actualizada"), HttpStatus.OK);
-   }
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> agregarExperiencia(@RequestBody Experiencia expe) {
+        if (StringUtils.isBlank(expe.getNombreExp())
+                && StringUtils.isBlank(expe.getDescripcionExp()) ){
+            return new ResponseEntity<>("Hay campos obligatorios sin completar.", HttpStatus.BAD_REQUEST);
+
+        }
+        iexperienciaService.saveExperiencia(expe);
+        return new ResponseEntity<>(expe, HttpStatus.OK);
+    }
+
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<?> editarExperiencia(@PathVariable int id, @RequestBody Experiencia experiencia) {
+        if (iexperienciaService.findExperiencia(id) == null) {
+            return new ResponseEntity<>("Experiencia no encontrada", HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(experiencia.getNombreExp())
+                && StringUtils.isBlank(experiencia.getDescripcionExp())){
+            return new ResponseEntity<>("Hay campos obligatorios sin completar.", HttpStatus.BAD_REQUEST);
+        }
+
+        Experiencia experienciaEditada = iexperienciaService.findExperiencia(id);
+
+        experienciaEditada.setNombreExp(experiencia.getNombreExp());
+        experienciaEditada.setDescripcionExp(experiencia.getDescripcionExp());
+       
+        iexperienciaService.saveExperiencia(experienciaEditada);
+
+        return new ResponseEntity<>(experienciaEditada, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/borrar/{id}")
+    public ResponseEntity<?> borrarExperiencia(@PathVariable int id) {
+
+        if (iexperienciaService.findExperiencia(id) == null) {
+            return new ResponseEntity<>("Experiencia no encontrada", HttpStatus.BAD_REQUEST);
+        }
+        iexperienciaService.deleteExperiencia(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+}
   
    
-}
+

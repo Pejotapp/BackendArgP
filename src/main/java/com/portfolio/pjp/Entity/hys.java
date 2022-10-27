@@ -5,20 +5,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 public class hys {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String nombre;
+    @NotBlank
+    private String nombreSkill;
+    @Range(min = 0, max = 100, message = "Por favor, ingrese valores positivos entre 0 y 100.")
     private int porcentaje;
 
     public hys() {
     }
 
     public hys(String nombre, int porcentaje) {
-        this.nombre = nombre;
+        this.nombreSkill = nombre;
         this.porcentaje = porcentaje;
     }
 
@@ -30,12 +34,12 @@ public class hys {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombreSkill() {
+        return nombreSkill;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombreSkill(String nombreSkill) {
+        this.nombreSkill = nombreSkill;
     }
 
     public int getPorcentaje() {
@@ -45,6 +49,8 @@ public class hys {
     public void setPorcentaje(int porcentaje) {
         this.porcentaje = porcentaje;
     }
+
+   
     
     
 }

@@ -4,39 +4,37 @@ package com.portfolio.pjp.Service;
 import com.portfolio.pjp.Entity.Educacion;
 import com.portfolio.pjp.Repository.REducacion;
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
-public class SEducacion {
+public class SEducacion implements IEduS {
     @Autowired
     REducacion rEducacion;
     
-    public List<Educacion> list(){
-    return rEducacion.findAll();}
-    
-    public Optional<Educacion> getOne(int id){
-    return rEducacion.findById(id);}
-    
-    public Optional<Educacion> getByNombreE(String nombreE){
-    return rEducacion.findByNombreE(nombreE);}
-    
-    public void save(Educacion educacion){
-    rEducacion.save(educacion);}
-    
-    public void delete(int id){
-    rEducacion.deleteById(id);}
-    
-    public boolean existsById(int id){
-    return rEducacion.existsById(id);}
-    
-    public boolean existsByNombreE(String nombreE){
-    return rEducacion.existsByNombreE(nombreE);}
+    @Override
+    public void deleteEducacion(int id) {
+        rEducacion.deleteById(id);
+    }
 
-    public boolean existById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+    public Educacion findEducacion(int id) {
+        Educacion edu = rEducacion.findById(id).orElse(null);
+        return edu;
+    }
+
+    @Override
+    public List<Educacion> getEducacion() {
+        List<Educacion> educaciones = rEducacion.findAll();
+        return educaciones;
+    }
+
+    @Override
+    public void saveEducacion(Educacion educacion) {
+
+        rEducacion.save(educacion);
+
     }
 }

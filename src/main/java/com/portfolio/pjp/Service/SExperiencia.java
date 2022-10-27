@@ -4,40 +4,41 @@ package com.portfolio.pjp.Service;
 import com.portfolio.pjp.Entity.Experiencia;
 import com.portfolio.pjp.Repository.RExperiencia;
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
-public class SExperiencia {
+public class SExperiencia implements IExperienciaService{
     @Autowired
     RExperiencia rExperiencia;
     
-    public List<Experiencia> list() {
-    return rExperiencia.findAll();
+     
+    @Override
+    public void deleteExperiencia(int id) {
+        rExperiencia.deleteById(id);
+
     }
-    
-    public Optional<Experiencia> getOne(int id){
-    
-    return rExperiencia.findById(id);
+
+    @Override
+    public Experiencia findExperiencia(int id) {
+        Experiencia expe = rExperiencia.findById(id).orElse(null);
+        return expe;
     }
-    
-    public Optional<Experiencia> getByNombreE(String nombreE){
-    return rExperiencia.findByNombreE(nombreE);}
-    
-    public void save(Experiencia expe){
-     rExperiencia.save(expe);}
-    
-    public void delete(int id){
-    rExperiencia.deleteById(id);}
-    
-    public boolean existsById(int id){
-    return rExperiencia.existsById(id);}
-    
-    public boolean existsByNombreE(String nombreE){
-    return rExperiencia.existsByNombreE(nombreE);}
+
+    @Override
+    public List<Experiencia> getExperiencia(){
+        List<Experiencia> experiencias = rExperiencia.findAll();
+        return experiencias;
+    }
+
+    @Override
+    public void saveExperiencia(Experiencia experiencia) {
+
+        rExperiencia.save(experiencia);
+
+    }
     
     
 }
